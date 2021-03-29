@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "492928522778",
+    "project_id": "ble-contact-tracing-9eb4e",
+    "storage_bucket": "ble-contact-tracing-9eb4e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:492928522778:android:869a496ff2fde3b4a7cfa3",
+        "android_client_info": {
+          "package_name": "com.example.contact_tracing"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "492928522778-gau298e755c5bppmimocev9a7gi2t1br.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.contact_tracing",
+            "certificate_hash": "8454b8f03295c5b5966c0ec3c31981ab371cf2bc"
+          }
+        },
+        {
+          "client_id": "492928522778-d8mdrss5uo2oinu2hfvm0uuiu9o7493h.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBMY4CWicUyBGULxuRQZVKD8yWi2Zq9lzY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "492928522778-d8mdrss5uo2oinu2hfvm0uuiu9o7493h.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
