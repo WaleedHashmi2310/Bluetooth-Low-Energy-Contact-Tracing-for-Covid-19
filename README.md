@@ -1,16 +1,5 @@
-# contact_tracing
+# Bluetooth Low-Energy Contact Tracing Application for Covid-19
 
-Covid-19 Contact Tracing Application
+A Serverless Flutter & Firebase Android Application
 
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Covid-19 Contact Tracing relying on Bluetooth Low Energy module on Android devices, classifying TC4TL (Too Close For Too Long) based on RSSI values and Scan-Time to determine contact and level of exposure of a user to an infected person.
