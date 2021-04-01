@@ -1,11 +1,13 @@
 import 'dart:ui';
 
+import 'package:contact_tracing/stores/login_store.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong/latlong.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Exposure extends StatefulWidget {
   @override
@@ -17,9 +19,50 @@ class _ExposureState extends State<Exposure> {
   bool _hasBeenPressed = true;
   Position _currentPosition;
 
+  String user;
+  List<String> infectedID = new List();
+
+  Future<List<String>> queryInfectedPeople() async {
+    List<String> infectedList = new List();
+    final QuerySnapshot result = await FirebaseFirestore.instance.collection('Infection Status').get();
+    final List<DocumentSnapshot> documents = result.docs;
+    documents.forEach((docs) => infectedList.add(docs.id));
+    return infectedList;
+  }
+
+  Future getInfectedPeople() async{
+    infectedID = await queryInfectedPeople();
+    var collectionID = user;
+    infectedID.forEach((infected) {
+      var docID = infected;
+      bool exists = false;
+      try {
+        FirebaseFirestore.instance.doc("$collectionID/$docID").get().then((doc) {
+          if (doc.exists){
+            exists = true;
+            print('$docID');
+            print('$exists');
+          }
+          else{
+            exists = false;
+            print('$docID');
+            print('$exists');
+          }
+        });
+      } catch (e) {
+        print(e);
+      }
+    });
+  }
+
   @override
-  void initState() {
+  void initState(){
+    super.initState();
     _getCurrentLocation();
+    user = (LoginStore().getUser().toString());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      getInfectedPeople();
+    });
   }
 
   _getCurrentLocation() {
@@ -35,6 +78,8 @@ class _ExposureState extends State<Exposure> {
       print(e);
     });
   }
+
+
 
   // @override
   // Widget build(BuildContext context) {
@@ -75,7 +120,7 @@ class _ExposureState extends State<Exposure> {
   //   }
   Widget build(BuildContext context) {
     return new Scaffold(
-        appBar: new AppBar(title: new Text('Check for Exposure')),
+        appBar: new AppBar(title: new Text('Check for Exposure', style: TextStyle(color:Colors.blue))),
         body: _currentPosition != null ? Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -155,6 +200,7 @@ class _ExposureState extends State<Exposure> {
           ],
         )
             : Center(child: CircularProgressIndicator()),
+
     );
   }
 }
