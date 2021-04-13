@@ -1,6 +1,6 @@
 import 'dart:ui';
-
 import 'package:contact_tracing/stores/login_store.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'dart:io';
@@ -9,6 +9,8 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong/latlong.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../theme.dart';
+
 class Exposure extends StatefulWidget {
   @override
   _ExposureState createState() => _ExposureState();
@@ -16,112 +18,120 @@ class Exposure extends StatefulWidget {
 
 class _ExposureState extends State<Exposure> {
 
-  bool _hasBeenPressed = true;
-  Position _currentPosition;
-
+  String date;
+  List<String> results = new List();
+  var _currentPosition;
   String user;
-  List<String> infectedID = new List();
+  String exposure = 'None';
 
   Future<List<String>> queryInfectedPeople() async {
-    List<String> infectedList = new List();
+    List<String> infectedQuery = new List();
     final QuerySnapshot result = await FirebaseFirestore.instance.collection('Infection Status').get();
     final List<DocumentSnapshot> documents = result.docs;
-    documents.forEach((docs) => infectedList.add(docs.id));
-    return infectedList;
+    documents.forEach((docs) => infectedQuery.add(docs.id));
+    return infectedQuery;
   }
 
-  Future getInfectedPeople() async{
-    infectedID = await queryInfectedPeople();
-    var collectionID = user;
-    infectedID.forEach((infected) {
-      var docID = infected;
+
+  Future<List<String>> checkForExposure() async{
+    List<String> infectedList  = await queryInfectedPeople();
+    List<String> infectedInteraction = new List();
+    if (infectedList.isEmpty == false){
+      var collectionID = user;
       bool exists = false;
-      try {
-        FirebaseFirestore.instance.doc("$collectionID/$docID").get().then((doc) {
-          if (doc.exists){
-            exists = true;
-            print('$docID');
-            print('$exists');
+      for (var infected in infectedList){
+
+          if (infected == user && (infectedList.length)==1){
+            setState(() {
+              exposure = 'No';
+            });
+            break;
           }
-          else{
-            exists = false;
-            print('$docID');
-            print('$exists');
+
+          if (infected != user){
+            var docID = infected;
+            try {
+              await FirebaseFirestore.instance.doc("$collectionID/$docID").get().then((doc){
+                if (doc.exists) {
+                  setState(() {
+                    exposure = 'Yes';
+                  });
+                  exists = true;
+                  infectedInteraction.add(docID);
+                }
+                else {
+                  if (exists != true){
+                    setState(() {
+                      exposure = 'No';
+                    });
+                  }
+                }
+              });
+            } catch (e) {
+              print(e);
+            }
           }
-        });
-      } catch (e) {
-        print(e);
       }
-    });
+    }
+    else{
+      setState(() {
+        exposure = 'No';
+      });
+    }
+    return infectedInteraction;
+  }
+
+  Future<void> getResults() async{
+    List<String> infectedInteraction = await checkForExposure();
+    if (infectedInteraction.isEmpty == false){
+      var collectionID = user;
+      var docID = infectedInteraction[((infectedInteraction.length)-1)];
+      await FirebaseFirestore.instance.doc("$collectionID/$docID").get().then((doc){
+        if (doc.exists) {
+          var len = (doc.data()['interactions']).length;
+          var x = doc.data()['interactions'][len-1];
+          results.add((x['longitude']).toString());
+          results.add((x['latitude']).toString());
+          date = x['scanTime'];
+          date = date.substring(0, date.length-12);
+        }
+        else {
+          print('Error');
+        }
+      });
+    }
+  }
+
+
+
+  void myFunc() async {
+    var x = checkForExposure();
+    await x;
+    await getResults();
+    if (results.isEmpty == false){
+      var long = double.parse(results[0]);
+      var lat = double.parse(results[1]);
+      setState(() {
+        _currentPosition = [long, lat];
+      });
+      print(_currentPosition);
+    }
+
   }
 
   @override
   void initState(){
     super.initState();
-    _getCurrentLocation();
     user = (LoginStore().getUser().toString());
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      getInfectedPeople();
+      myFunc();
     });
   }
 
-  _getCurrentLocation() {
-    final Geolocator geolocator = Geolocator()..forceAndroidLocationManager;
-
-    geolocator
-        .getCurrentPosition(desiredAccuracy: LocationAccuracy.best)
-        .then((Position position) {
-      setState(() {
-        _currentPosition = position;
-      });
-    }).catchError((e) {
-      print(e);
-    });
-  }
-
-
-
-  // @override
-  // Widget build(BuildContext context) {
-  //   return Scaffold(
-  //       backgroundColor: Colors.white,
-  //       appBar: AppBar(
-  //         title: Text(
-  //           'Get Location',
-  //         ),
-  //         titleSpacing: 0.0,
-  //         elevation: 1.0,
-  //         automaticallyImplyLeading: true,
-  //         leading: IconButton(
-  //             icon: Icon(Icons.arrow_back),
-  //             // Replace false with location to exit to
-  //             onPressed: () {
-  //               _getCurrentLocation();}
-  //               ),
-  //       ),
-  //     body: Center(
-  //       child: Column(
-  //         mainAxisAlignment: MainAxisAlignment.center,
-  //         children: <Widget>[
-  //           if (_currentPosition != null)
-  //             Text(
-  //                 "LAT: ${_currentPosition.latitude}, LNG: ${_currentPosition.longitude}"),
-  //           FlatButton(
-  //             child: Text("Get location"),
-  //             onPressed: () {
-  //               _getCurrentLocation();
-  //             },
-  //           ),
-  //         ],
-  //       ),
-  //     ),
-  //
-  //   );
-  //   }
   Widget build(BuildContext context) {
     return new Scaffold(
-        appBar: new AppBar(title: new Text('Check for Exposure', style: TextStyle(color:Colors.blue))),
-        body: _currentPosition != null ? Column(
+        appBar: new AppBar(title: new Text('Check for Exposure', style: TextStyle(fontSize: 20.0, color: Colors.blue))),
+        body: (_currentPosition != null && exposure == 'Yes')  ? Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -136,8 +146,8 @@ class _ExposureState extends State<Exposure> {
                     color: Colors.black,
                   ),
                   children: <TextSpan>[
-                    new TextSpan(text: 'Possible Exposure: ', style: new TextStyle(fontWeight: FontWeight.bold)),
-                    new TextSpan(text: 'February 25, 2021', ),
+                    new TextSpan(text: 'Potential Exposure: ', style: new TextStyle(fontSize: 18.0,fontWeight: FontWeight.bold)),
+                    new TextSpan(text: '$date', style: new TextStyle(fontSize: 18.0)),
                   ],
                 ),
               ),
@@ -157,7 +167,7 @@ class _ExposureState extends State<Exposure> {
                     width: MediaQuery.of(context).size.width/1.1,
                     child: new FlutterMap(
                         options: new MapOptions(
-                            center: new LatLng(_currentPosition.latitude, _currentPosition.longitude), minZoom: 16.0),
+                            center: new LatLng(_currentPosition[1], _currentPosition[0]), minZoom: 16.0),
                         layers: [
                           new TileLayerOptions(
                               urlTemplate:
@@ -172,7 +182,7 @@ class _ExposureState extends State<Exposure> {
                               Marker(
                                 width: 80.0,
                                 height: 80.0,
-                                point: LatLng(_currentPosition.latitude, _currentPosition.longitude),
+                                point: LatLng(_currentPosition[1], _currentPosition[0]),
                                 builder: (ctx) =>
                                     Container(
                                       child: Icon(
@@ -193,13 +203,46 @@ class _ExposureState extends State<Exposure> {
             Padding(
               padding: const EdgeInsets.fromLTRB(7, 0, 7, 8),
               child: Center(child:
-              Text('At this location, you were near someone who shared their positive COVID-19 result.', textAlign: TextAlign.center,)
+              Text('At this location, you were near someone who shared their positive COVID-19 result.', textAlign: TextAlign.center, style: new TextStyle(fontSize: 16.0))
               ),
             ),
 
           ],
         )
-            : Center(child: CircularProgressIndicator()),
+            : Center(child: (exposure == 'No')?
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+                  child: Center(
+                    child: Container(
+                        constraints: const BoxConstraints(maxHeight: 240),
+                        margin: const EdgeInsets.symmetric(horizontal: 8),
+                        child: Image.asset('assets/img/Exposure.png')
+                    ),
+                  ),
+                ),
+                SizedBox(height: 24.0),
+                Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                  //margin: const EdgeInsets.symmetric(horizontal: 10),
+                    child: Center(
+                      child: Container(
+                        child: RichText(
+                          textAlign: TextAlign.center,
+                          text: const TextSpan(children: <TextSpan>[
+                            TextSpan(text: 'We couldn\'t find a potential exposure in our records.', style: TextStyle(color: MyColors.primaryColor, fontSize: 20.0, fontWeight: FontWeight.w400)),
+                          ]),
+                        )
+                      ),
+                    )
+                )
+              ],
+            ):
+            CircularProgressIndicator(),
+        ),
 
     );
   }

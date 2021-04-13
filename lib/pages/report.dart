@@ -1,6 +1,8 @@
 import 'package:contact_tracing/stores/login_store.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+
+import '../theme.dart';
 class Report extends StatefulWidget {
   @override
   _ReportState createState() => _ReportState();
@@ -8,7 +10,7 @@ class Report extends StatefulWidget {
 
 class _ReportState extends State<Report> {
 
-  bool _hasBeenPressed = false;
+  String _hasBeenPressed;
   String user;
 
   Future<void> setInfected(String docID) async{
@@ -29,7 +31,7 @@ class _ReportState extends State<Report> {
           });
         }
         setState(() {
-          _hasBeenPressed = true;
+          _hasBeenPressed = 'Yes';
         });
       });
     } catch (e) {
@@ -50,13 +52,13 @@ class _ReportState extends State<Report> {
         if (doc.exists){
           exists = true;
           setState(() {
-            _hasBeenPressed = true;
+            _hasBeenPressed = 'Yes';
           });
         }
         else{
           exists = false;
           setState(() {
-            _hasBeenPressed = false;
+            _hasBeenPressed = 'No';
           });
         }
       });
@@ -74,7 +76,7 @@ class _ReportState extends State<Report> {
         appBar: AppBar(
           title: Text(
               'Report Infection',
-            style: TextStyle(color: Colors.blue),
+              style: TextStyle(fontSize: 20.0, color: Colors.blue),
           ),
           titleSpacing: 0.0,
           elevation: 0.0,
@@ -85,20 +87,90 @@ class _ReportState extends State<Report> {
               onPressed: () => Navigator.pop(context)),
         ),
       body: Center(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            ConstrainedBox(
-              constraints: BoxConstraints.tightFor(width: 200, height: 200),
-              child: _hasBeenPressed? Text('Take Care') : MaterialButton(
-                color: Colors.blue,
-                child: Center(child: Text('Report Infection',textAlign: TextAlign.center, style: TextStyle(fontSize: 18, color: Colors.white))),
-                shape: CircleBorder(),
-                onPressed: () async{setInfected(user);},
+        child: (_hasBeenPressed == null)? CircularProgressIndicator():
+        Container(
+          child: (_hasBeenPressed == 'No')? Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+                child: Center(
+                  child: Container(
+                      constraints: const BoxConstraints(maxHeight: 240),
+                      margin: const EdgeInsets.symmetric(horizontal: 8),
+                      child: Image.asset('assets/img/Report.png')
+                  ),
+                ),
               ),
-            ),
-          ],
+              SizedBox(height: 24.0),
+              Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                  //margin: const EdgeInsets.symmetric(horizontal: 10),
+                  child: Center(
+                    child: Container(
+                        child: RichText(
+                          textAlign: TextAlign.center,
+                          text: const TextSpan(children: <TextSpan>[
+                            TextSpan(text: 'Tested Positive?', style: TextStyle(color: MyColors.primaryColor, fontSize: 20.0,fontWeight: FontWeight.w500)),
+                            TextSpan(text: '\n\nReport infection', style: TextStyle(color: MyColors.primaryColor, fontSize: 16.0,)),
+                            TextSpan(text: ' anonymously ', style: TextStyle(color: MyColors.primaryColor, fontSize: 16.0, fontWeight: FontWeight.w500)),
+                            TextSpan(text: 'to people you interacted with in the past 2 weeks.', style: TextStyle(color: MyColors.primaryColor, fontSize: 16.0,)),
+                          ]),
+                        )
+                    ),
+                  )
+              ),
+              Container(
+                margin: EdgeInsets.all(48),
+                child: Column(
+                  children: [
+                    ButtonTheme(
+                      minWidth: 200.0,
+                      height: 48.0,
+                      child: FlatButton(
+                        color: Colors.red,
+                        child: Center(child: Text('Report Infection',textAlign: TextAlign.center, style: TextStyle(fontSize: 18, color: Colors.white))),
+                        onPressed: () async{setInfected(user);},
+                      ),
+                    ),
+                    Text('\nInfection Status will be reset after 2 weeks of report date.' ,style: TextStyle(color: Colors.black54), textAlign: TextAlign.center),
+                  ],
+                ),
+              )
+            ],
+          ): Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+                child: Center(
+                  child: Container(
+                      constraints: const BoxConstraints(maxHeight: 240),
+                      margin: const EdgeInsets.symmetric(horizontal: 8),
+                      child: Image.asset('assets/img/Positive.png')
+                  ),
+                ),
+              ),
+              SizedBox(height: 24.0),
+              Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                  //margin: const EdgeInsets.symmetric(horizontal: 10),
+                  child: Center(
+                    child: Container(
+                        child: RichText(
+                          textAlign: TextAlign.center,
+                          text: const TextSpan(children: <TextSpan>[
+                            TextSpan(text: 'You have already reported infection!', style: TextStyle(color: MyColors.primaryColor, fontSize: 20.0,fontWeight: FontWeight.w500)),
+                            TextSpan(text: '\n\nInfection status will reset after 2 weeks of report date.', style: TextStyle(color: MyColors.primaryColor, fontSize: 16.0,)),
+                          ]),
+                        )
+                    ),
+                  )
+              ),
+            ],
+          ),
         ),
       )
     );

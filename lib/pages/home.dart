@@ -126,7 +126,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                       ),
                       ListTile(
                           leading: Icon(Icons.label_important_outlined),
-                          title: Text('Report Infection'),
+                          title: Text('Report Infection', style: TextStyle(fontSize: 16.0, color: Colors.black)),
                           onTap: () => {
                             Navigator.push(
                               context,
@@ -136,7 +136,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                       ),
                       ListTile(
                           leading: Icon(Icons.label_important_outlined),
-                          title: Text('Check for Exposure'),
+                          title: Text('Check for Exposure', style: TextStyle(fontSize: 16.0, color: Colors.black)),
                           onTap: () => {
                             Navigator.push(
                               context,
@@ -147,7 +147,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
 
                       ListTile(
                           leading: Icon(Icons.exit_to_app, color: Colors.red[400],),
-                          title:Text('Sign Out', style: TextStyle(color: Colors.red[400]),),
+                          title:Text('Sign Out', style: TextStyle(color: Colors.red[400],fontSize: 16.0)),
                           onTap: () {
                             loginStore.signOut(context);
                           }

@@ -153,13 +153,14 @@ class _ScanState extends State<Scan> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  Text('$myData' ,style: TextStyle(fontSize: 16.0, color: Colors.black)),
-                  // if (_currentPosition != null) Text(
-                  //     "LAT: ${_currentPosition.latitude}, LNG: ${_currentPosition.longitude}"),
-                  Padding(
-                    padding: EdgeInsets.all(10.0),
-                  ),
-                  Text('$_nrMessaggesReceived', style: TextStyle(color: Colors.red)),
+                  Container(),
+                  // Text('$myData' ,style: TextStyle(fontSize: 16.0, color: Colors.black)),
+                  // // if (_currentPosition != null) Text(
+                  // //     "LAT: ${_currentPosition.latitude}, LNG: ${_currentPosition.longitude}"),
+                  // Padding(
+                  //   padding: EdgeInsets.all(10.0),
+                  // ),
+                  // Text('$_nrMessaggesReceived', style: TextStyle(color: Colors.red)),
                   // Container(
                   //   height: MediaQuery.of(context).size.height/1.16,
                   //   width: MediaQuery.of(context).size.width/1.16,

@@ -83,31 +83,35 @@ class _BroadcastState extends State<Broadcast> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: Column(
-        children: [
-          Obx(
-            () => broadcastReadyAuthorization != true
-                ? Center(child: Text('No Authorization...'))
-                : Container()
-          ),
-          Obx(
-              () => broadcastReadyBluetooth != true
-                  ? Center(child: Text('Enable Bluetooth'),)
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Obx(
+              () => broadcastReadyAuthorization != true
+                  ? Center(child: Text('No Authorization...'))
                   : Container()
-          ),
-          Obx(
-                  () => broadcastReadyLocation != true
-                  ? Center(child: Text('Enable Location'),)
-                  : Container()
-          ),
-          Text('Beacon Data',
-              style: Theme.of(context).textTheme.headline5),
-          Text('UUID: $uuid', style: TextStyle(color: Colors.black)),
-          Text('Major id: $majorId', style: TextStyle(color: Colors.black)),
-          Text('Minor id: $minorId', style: TextStyle(color: Colors.black) ),
-          Text('Tx Power: $transmissionPower', style: TextStyle(color: Colors.black)),
-          Text('Extra data: $extraData', style: TextStyle(color: Colors.black)),
-        ],
+            ),
+            Obx(
+                () => broadcastReadyBluetooth != true
+                    ? Center(child: Text('Enable Bluetooth'),)
+                    : Container()
+            ),
+            Obx(
+                    () => broadcastReadyLocation != true
+                    ? Center(child: Text('Enable Location'),)
+                    : Container()
+            ),
+            // Text('Beacon Data',
+            //     style: Theme.of(context).textTheme.headline5),
+            // Text('UUID: $uuid', style: TextStyle(color: Colors.black)),
+            // Text('Major id: $majorId', style: TextStyle(color: Colors.black)),
+            // Text('Minor id: $minorId', style: TextStyle(color: Colors.black) ),
+            // Text('Tx Power: $transmissionPower', style: TextStyle(color: Colors.black)),
+            // Text('Extra data: $extraData', style: TextStyle(color: Colors.black)),
+          ],
+        ),
       ),
     );
   }
