@@ -89,6 +89,8 @@ class _ReportState extends State<Report> {
       body: Center(
         child: (_hasBeenPressed == null)? CircularProgressIndicator():
         Container(
+          height: MediaQuery.of(context).size.height/1.0,
+          width: MediaQuery.of(context).size.width/1.0,
           child: (_hasBeenPressed == 'No')? Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -122,7 +124,7 @@ class _ReportState extends State<Report> {
                   )
               ),
               Container(
-                margin: EdgeInsets.all(48),
+                margin: EdgeInsets.all(10),
                 child: Column(
                   children: [
                     ButtonTheme(

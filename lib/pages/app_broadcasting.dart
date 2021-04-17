@@ -24,7 +24,7 @@ class _BroadcastState extends State<Broadcast> {
   static const int minorId = 0;
   static const int transmissionPower = -59;
   static const String identifier = 'com.example.myDeviceRegion';
-  static const AdvertiseMode advertiseMode = AdvertiseMode.lowLatency;
+  static const AdvertiseMode advertiseMode = AdvertiseMode.lowPower;
   static const String layout = "m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24";
   static const int manufacturerId = 0x0118;
   static const List<int> extraData = [100];
@@ -103,13 +103,13 @@ class _BroadcastState extends State<Broadcast> {
                     ? Center(child: Text('Enable Location'),)
                     : Container()
             ),
-            // Text('Beacon Data',
-            //     style: Theme.of(context).textTheme.headline5),
-            // Text('UUID: $uuid', style: TextStyle(color: Colors.black)),
-            // Text('Major id: $majorId', style: TextStyle(color: Colors.black)),
-            // Text('Minor id: $minorId', style: TextStyle(color: Colors.black) ),
-            // Text('Tx Power: $transmissionPower', style: TextStyle(color: Colors.black)),
-            // Text('Extra data: $extraData', style: TextStyle(color: Colors.black)),
+            Text('Beacon Data',
+                style: Theme.of(context).textTheme.headline5),
+            Text('UUID: $uuid', style: TextStyle(color: Colors.black)),
+            Text('Major id: $majorId', style: TextStyle(color: Colors.black)),
+            Text('Minor id: $minorId', style: TextStyle(color: Colors.black) ),
+            Text('Tx Power: $transmissionPower', style: TextStyle(color: Colors.black)),
+            Text('Extra data: $extraData', style: TextStyle(color: Colors.black)),
           ],
         ),
       ),
